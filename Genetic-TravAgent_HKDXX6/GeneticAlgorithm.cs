@@ -12,26 +12,33 @@ public class GeneticAlgorithm
     private readonly int _tournamentSize;
     private readonly Random _random;
 
-    public GeneticAlgorithm(List<City> cities, int populationSize, int generations, double mutationRate, double eliteRate, int tournamentSize, Random? random = null)
+    public GeneticAlgorithm(List<City> cities, int populationSize, int generations, double mutationRate,
+        double eliteRate, int tournamentSize, Random? random = null)
     {
-        if (cities is null || cities.Count == 0) throw new ArgumentNullException(nameof(cities), "Cities cannot be null or empty.");
+        if (cities is null || cities.Count == 0)
+            throw new ArgumentNullException(nameof(cities), "Cities cannot be null or empty.");
         _cities = cities;
-        
-        if (populationSize <= 0) throw new ArgumentOutOfRangeException(nameof(populationSize), "Population size must be greater than 0.");
+
+        if (populationSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(populationSize), "Population size must be greater than 0.");
         _populationSize = populationSize;
-        
-        if (generations <= 0) throw new ArgumentOutOfRangeException(nameof(generations), "Generations must be greater than 0.");
+
+        if (generations <= 0)
+            throw new ArgumentOutOfRangeException(nameof(generations), "Generations must be greater than 0.");
         _generations = generations;
-        
-        if (mutationRate is > 1 or < 0) throw new ArgumentOutOfRangeException(nameof(mutationRate), "Mutation rate must be between 0 and 1.");
+
+        if (mutationRate is > 1 or < 0)
+            throw new ArgumentOutOfRangeException(nameof(mutationRate), "Mutation rate must be between 0 and 1.");
         _mutationRate = mutationRate;
-        
-        if (eliteRate is > 1 or < 0) throw new ArgumentOutOfRangeException(nameof(eliteRate), "Elite rate must be between 0 and 1.");
+
+        if (eliteRate is > 1 or < 0)
+            throw new ArgumentOutOfRangeException(nameof(eliteRate), "Elite rate must be between 0 and 1.");
         _eliteRate = eliteRate;
-        
-        if (tournamentSize <= 0) throw new ArgumentOutOfRangeException(nameof(tournamentSize), "Tournament size must be greater than 0.");
+
+        if (tournamentSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(tournamentSize), "Tournament size must be greater than 0.");
         _tournamentSize = tournamentSize;
-        
+
         _random = random ?? Random.Shared;
     }
 
@@ -50,28 +57,29 @@ public class GeneticAlgorithm
 
     private List<Tour> GenerateInitialPopulation()
     {
-        List<Tour> population = new List<Tour>();
-        for (int i = 0; i < _populationSize; i++)
+        var population = new List<Tour>();
+        for (var i = 0; i < _populationSize; i++)
         {
             var cityList = _cities.OrderBy(x => _random.Next()).ToList();
             population.Add(new Tour(cityList));
         }
+
         return population;
     }
 
     private List<Tour> Evolve(List<Tour> population)
     {
-        List<Tour> newPopulation = new List<Tour>();
-        
-        int eliteCount = (int)Math.Round(_eliteRate * _populationSize);
+        var newPopulation = new List<Tour>();
+
+        var eliteCount = (int)Math.Round(_eliteRate * _populationSize);
         newPopulation.AddRange(population.OrderBy(t => t.Fitness).Take(eliteCount));
 
         // Generate offspring through crossover and mutation
         while (newPopulation.Count < _populationSize)
         {
-            Tour parent1 = TournamentSelection(population);
-            Tour parent2 = TournamentSelection(population);
-            Tour child = Crossover(parent1, parent2);
+            var parent1 = TournamentSelection(population);
+            var parent2 = TournamentSelection(population);
+            var child = Crossover(parent1, parent2);
 
             if (_random.NextDouble() < _mutationRate)
             {
@@ -83,13 +91,13 @@ public class GeneticAlgorithm
 
         return newPopulation;
     }
-    
+
     private void Mutate(Tour tour)
     {
         var index1 = _random.Next(0, tour.CityList.Count);
         var index2 = _random.Next(0, tour.CityList.Count);
         (tour.CityList[index1], tour.CityList[index2]) = (tour.CityList[index2], tour.CityList[index1]);
-        
+
         tour.RecalculateFitness();
     }
 
@@ -100,36 +108,32 @@ public class GeneticAlgorithm
         {
             throw new ArgumentException("Tours don't have the same cities.");
         }
-        
-        int start = _random.Next(tour1.CityList.Count);
-        int end = _random.Next(start, tour1.CityList.Count);
-    
-        List<City> childCities = new List<City>(new City[tour1.CityList.Count]);
-        
-        for (int i = start; i < end; i++)
+
+        var start = _random.Next(tour1.CityList.Count);
+        var end = _random.Next(start, tour1.CityList.Count);
+
+        var childCities = new List<City>(new City[tour1.CityList.Count]);
+
+        for (var i = start; i < end; i++)
         {
             childCities[i] = tour1.CityList[i];
         }
-        int currentIndex = 0;
-        for (int i = 0; i < tour2.CityList.Count; i++)
+
+        var currentIndex = 0;
+
+        foreach (var city in tour2.CityList.Where(c => !childCities.Contains(c)))
         {
-            if (!childCities.Contains(tour2.CityList[i])) //no dupes
+            while (childCities[currentIndex] != default(City)) //find first empty slot
             {
-                while (childCities[currentIndex] != default(City)) //find first empty slot
-                {
-                    currentIndex++;
-                }
-        
-                childCities[currentIndex] = tour2.CityList[i];
+                currentIndex++;
             }
+
+            childCities[currentIndex] = city;
         }
-        
+
         return new Tour(childCities);
     }
 
-    private Tour TournamentSelection(List<Tour> population)
-    {
-        var tournament = population.OrderBy(x => _random.Next()).Take(_tournamentSize).ToList();
-        return tournament.OrderBy(t => t.Fitness).First();
-    }
+    private Tour TournamentSelection(List<Tour> population) => population.OrderBy(x => _random.Next())
+        .Take(_tournamentSize).OrderBy(t => t.Fitness).First();
 }
