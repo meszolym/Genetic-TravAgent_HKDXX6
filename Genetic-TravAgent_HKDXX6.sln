@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genetic-TravAgent_HKDXX6", "Genetic-TravAgent_HKDXX6\Genetic-TravAgent_HKDXX6.csproj", "{35555D9F-CF2A-48BD-A6C5-E7E44C334E97}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35555D9F-CF2A-48BD-A6C5-E7E44C334E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35555D9F-CF2A-48BD-A6C5-E7E44C334E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35555D9F-CF2A-48BD-A6C5-E7E44C334E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35555D9F-CF2A-48BD-A6C5-E7E44C334E97}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
