@@ -49,7 +49,7 @@ public class GeneticAlgorithm
         for (var generation = 0; generation < _generations; generation++)
         {
             population = Evolve(population);
-            Console.WriteLine($"Generation {generation++}: Best TourLength = {population.Min(t => t.TourLength)}");
+            Console.WriteLine($"Generation {generation + 1}: Best TourLength = {population.Min(t => t.TourLength)}");
         }
 
         return population.OrderBy(t => t.TourLength).First();

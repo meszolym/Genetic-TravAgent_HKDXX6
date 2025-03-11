@@ -14,7 +14,7 @@ public class Program
             cities.Add(new City(Random.Shared.Next(0, 100), Random.Shared.Next(0, 100)));
         }
 
-        var ga = new GeneticAlgorithm(cities, 100, 10000, 0.5, 0.05, 10);
+        var ga = new GeneticAlgorithm(cities, 100, 1000, 0.5, 0.05, 10);
 
         var bestTour = ga.Run();
         Console.Write("Cities: [");
