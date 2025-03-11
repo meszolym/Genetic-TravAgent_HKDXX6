@@ -12,15 +12,21 @@ public class Program
         {
             cities.Add(new City(Random.Shared.Next(0,100), Random.Shared.Next(0,100)));
         }
+
+        var ga = new GeneticAlgorithm(cities, 100, 1000, 0.5, 0.05, 10); 
         
-        Tour tour1 = new Tour(cities);
-        Tour tour2 = new Tour(cities.OrderBy(x => Random.Shared.Next(0, 100)).ToList());
-        
-        Console.WriteLine($"Tour 1 Fitness: {tour1.Fitness}");
-        Console.WriteLine($"Tour 2 Fitness: {tour2.Fitness}");
-        
-        Tour childTour = Tour.Crossover(tour1, tour2);
-        
-        Console.WriteLine("Child Tour Fitness: " + childTour.Fitness);
+        var bestTour = ga.Run();
+        Console.Write("Cities: [");
+        for (int i = 0; i< cities.Count; i++)
+        {
+            Console.Write(cities[i].ToString());
+            if (i != cities.Count - 1)
+            {
+                Console.Write(", ");
+            }
+        }
+        Console.WriteLine("]");
+
+        Console.WriteLine("Best tour:\n"+bestTour.ToString());
     }
 }
