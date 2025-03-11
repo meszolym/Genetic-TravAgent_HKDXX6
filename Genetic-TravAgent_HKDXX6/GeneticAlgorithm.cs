@@ -49,10 +49,10 @@ public class GeneticAlgorithm
         for (var generation = 0; generation < _generations; generation++)
         {
             population = Evolve(population);
-            Console.WriteLine($"Generation {generation + 1}: Best Fitness = {population.Min(t => t.Fitness)}");
+            Console.WriteLine($"Generation {generation++}: Best TourLength = {population.Min(t => t.TourLength)}");
         }
 
-        return population.OrderBy(t => t.Fitness).First();
+        return population.OrderBy(t => t.TourLength).First();
     }
 
     private List<Tour> GenerateInitialPopulation()
@@ -72,7 +72,7 @@ public class GeneticAlgorithm
         var newPopulation = new List<Tour>();
 
         var eliteCount = (int)Math.Round(_eliteRate * _populationSize);
-        newPopulation.AddRange(population.OrderBy(t => t.Fitness).Take(eliteCount));
+        newPopulation.AddRange(population.OrderBy(t => t.TourLength).Take(eliteCount));
 
         // Generate offspring through crossover and mutation
         while (newPopulation.Count < _populationSize)
@@ -98,7 +98,7 @@ public class GeneticAlgorithm
         var index2 = _random.Next(0, tour.CityList.Count);
         (tour.CityList[index1], tour.CityList[index2]) = (tour.CityList[index2], tour.CityList[index1]);
 
-        tour.RecalculateFitness();
+        tour.RecalculateTourLength();
     }
 
     private Tour Crossover(Tour tour1, Tour tour2)
@@ -112,7 +112,7 @@ public class GeneticAlgorithm
         var start = _random.Next(tour1.CityList.Count);
         var end = _random.Next(start, tour1.CityList.Count);
 
-        var childCities = new List<City>(new City[tour1.CityList.Count]);
+        var childCities = new List<City?>(new City[tour1.CityList.Count]);
 
         for (var i = start; i < end; i++)
         {
@@ -123,7 +123,7 @@ public class GeneticAlgorithm
 
         foreach (var city in tour2.CityList.Where(c => !childCities.Contains(c)))
         {
-            while (childCities[currentIndex] != default(City)) //find first empty slot
+            while (childCities[currentIndex] != null) //find first empty slot
             {
                 currentIndex++;
             }
@@ -131,9 +131,9 @@ public class GeneticAlgorithm
             childCities[currentIndex] = city;
         }
 
-        return new Tour(childCities);
+        return new Tour(childCities!);
     }
 
     private Tour TournamentSelection(List<Tour> population) => population.OrderBy(x => _random.Next())
-        .Take(_tournamentSize).OrderBy(t => t.Fitness).First();
+        .Take(_tournamentSize).OrderBy(t => t.TourLength).First();
 }
