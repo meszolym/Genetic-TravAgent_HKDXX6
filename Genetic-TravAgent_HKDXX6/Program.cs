@@ -4,7 +4,7 @@ namespace Genetic_TravAgent_HKDXX6;
 
 public class Program
 {
-    const int NUM_CITIES = 50;
+    const int NUM_CITIES = 15;
 
     public static void Main(string[] args)
     {
@@ -14,9 +14,9 @@ public class Program
             cities.Add(new City(Random.Shared.Next(0, 100), Random.Shared.Next(0, 100)));
         }
 
-        var ga = new GeneticAlgorithm(cities, 100, 1000, 0.5, 0.05, 10);
+        var ga = new GeneticAlgorithm(cities, 100, 0.5, 0.05, 10);
 
-        var bestTour = ga.Run();
+        var bestTour = ga.RunForTime(TimeSpan.FromMinutes(1));
         Console.Write("Cities: [");
         for (var i = 0; i < cities.Count; i++)
         {

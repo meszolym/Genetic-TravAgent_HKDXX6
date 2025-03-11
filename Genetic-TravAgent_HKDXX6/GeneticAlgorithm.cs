@@ -1,4 +1,5 @@
-﻿using Genetic_TravAgent_HKDXX6.Models;
+﻿using System.Diagnostics;
+using Genetic_TravAgent_HKDXX6.Models;
 
 namespace Genetic_TravAgent_HKDXX6;
 
@@ -6,13 +7,12 @@ public class GeneticAlgorithm
 {
     private readonly List<City> _cities;
     private readonly int _populationSize;
-    private readonly int _generations;
     private readonly double _mutationRate;
     private readonly double _eliteRate;
     private readonly int _tournamentSize;
     private readonly Random _random;
 
-    public GeneticAlgorithm(List<City> cities, int populationSize, int generations, double mutationRate,
+    public GeneticAlgorithm(List<City> cities, int populationSize, double mutationRate,
         double eliteRate, int tournamentSize, Random? random = null)
     {
         if (cities is null || cities.Count == 0)
@@ -22,10 +22,7 @@ public class GeneticAlgorithm
         if (populationSize <= 0)
             throw new ArgumentOutOfRangeException(nameof(populationSize), "Population size must be greater than 0.");
         _populationSize = populationSize;
-
-        if (generations <= 0)
-            throw new ArgumentOutOfRangeException(nameof(generations), "Generations must be greater than 0.");
-        _generations = generations;
+        
 
         if (mutationRate is > 1 or < 0)
             throw new ArgumentOutOfRangeException(nameof(mutationRate), "Mutation rate must be between 0 and 1.");
@@ -42,16 +39,34 @@ public class GeneticAlgorithm
         _random = random ?? Random.Shared;
     }
 
-    public Tour Run()
+    public Tour RunWithGenCap(int generations)
     {
+        if (generations <= 0) 
+            throw new ArgumentOutOfRangeException(nameof(generations), "Generations must be greater than 0.");
+        
         var population = GenerateInitialPopulation();
 
-        for (var generation = 0; generation < _generations; generation++)
+        for (var generation = 0; generation < generations; generation++)
         {
             population = Evolve(population);
             Console.WriteLine($"Generation {generation + 1}: Best TourLength = {population.Min(t => t.TourLength)}");
         }
 
+        return population.OrderBy(t => t.TourLength).First();
+    }
+
+    public Tour RunForTime(TimeSpan timeSpan)
+    {
+        var population = GenerateInitialPopulation();
+        
+        var stopwatch = Stopwatch.StartNew();
+        int timesRan = 0;
+        while (stopwatch.Elapsed < timeSpan)
+        {
+            population = Evolve(population);
+            timesRan++;
+            Console.WriteLine($"Elapsed Time: {stopwatch.Elapsed.TotalSeconds:F2}s, Times ran = {timesRan}, Best TourLength = {population.Min(t => t.TourLength)}");
+        }
         return population.OrderBy(t => t.TourLength).First();
     }
 
