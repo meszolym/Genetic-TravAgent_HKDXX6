@@ -4,7 +4,7 @@ namespace Genetic_TravAgent_HKDXX6;
 
 public class Program
 {
-    const int NUM_CITIES = 15;
+    const int NUM_CITIES = 100;
 
     public static void Main(string[] args)
     {
