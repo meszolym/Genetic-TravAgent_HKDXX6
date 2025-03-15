@@ -4,7 +4,7 @@ namespace Genetic_TravAgent_HKDXX6;
 
 public class Program
 {
-    const int NUM_CITIES = 100;
+    const int NUM_CITIES = 20;
 
     public static void Main(string[] args)
     {
@@ -16,7 +16,9 @@ public class Program
 
         var ga = new GeneticAlgorithm(cities, 100, 0.5, 0.05, 10);
 
-        var bestTour = ga.RunForTime(TimeSpan.FromMinutes(1));
+        //var bestTour = ga.RunForTime(TimeSpan.FromMinutes(1));
+        //var bestTour = ga.RunWithGenCap(10000);
+        var bestTour = ga.RunForDelta(3, 1000);
         Console.Write("Cities: [");
         for (var i = 0; i < cities.Count; i++)
         {

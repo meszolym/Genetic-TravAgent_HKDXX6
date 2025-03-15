@@ -39,6 +39,33 @@ public class GeneticAlgorithm
         _random = random ?? Random.Shared;
     }
 
+    public Tour RunForDelta(double delta, int maxStopCount)
+    {
+        int stopCount = 0;
+        var population = GenerateInitialPopulation();
+        double lastBest = population.Min(t => t.TourLength);
+        int generation = 0;
+        while (maxStopCount >= stopCount)
+        {
+            population = Evolve(population);
+            double currentBest = population.Min(t => t.TourLength);
+            if (Math.Abs(currentBest - lastBest) < delta)
+            {
+                stopCount++;
+            }
+            else
+            {
+                stopCount = 0;
+            }
+            lastBest = currentBest;
+            Console.WriteLine($"Generation {generation + 1}: Best TourLength = {currentBest}, StopCount = {stopCount}");
+            generation++;
+        }
+        
+        return population.OrderBy(t => t.TourLength).First();
+        
+    }
+
     public Tour RunWithGenCap(int generations)
     {
         if (generations <= 0) 
@@ -75,7 +102,7 @@ public class GeneticAlgorithm
         var population = new List<Tour>();
         for (var i = 0; i < _populationSize; i++)
         {
-            var cityList = _cities.OrderBy(x => _random.Next()).ToList();
+            var cityList = _cities.OrderBy(_ => _random.Next()).ToList();
             population.Add(new Tour(cityList));
         }
 
@@ -149,6 +176,6 @@ public class GeneticAlgorithm
         return new Tour(childCities!);
     }
 
-    private Tour TournamentSelection(List<Tour> population) => population.OrderBy(x => _random.Next())
+    private Tour TournamentSelection(List<Tour> population) => population.OrderBy(_ => _random.Next())
         .Take(_tournamentSize).OrderBy(t => t.TourLength).First();
 }
